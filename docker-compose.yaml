@@ -1,0 +1,27 @@
+#-- v3 syntax
+version: '2'
+
+services:
+  mongodb:
+    image: mongo:4.2.6
+    container_name: mongodbsky
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=skydb
+    ports:
+      - 27017:27017
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
+  rabbit-network:
+    external:
+      name: rabbitmq-server_rabbit-network
+
+volumes:
+  dbdata:
