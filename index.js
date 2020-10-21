@@ -16,7 +16,7 @@ mongoose.connect(
 
 
 const authRoutes = require("./routes/auth");
-const dashboardRoutes = require("./routes/dashboard");
+const protectedRouter = require("./routes/protected");
 const verifyToken = require("./routes/validate-token");
 
 
@@ -24,6 +24,6 @@ app.use(express.json());
 
 
 app.use("/api/user", authRoutes);
-app.use("/api/protected", verifyToken, dashboardRoutes);
+app.use("/api/protected", verifyToken, protectedRouter);
 
 app.listen(6767, () => console.log("Servidor rodando na porta 6767"));

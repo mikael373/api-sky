@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
   const isEmailExist = await User.findOne({ email: req.body.email });
 
   if (isEmailExist)
-    return res.status(400).json({ error: "email já registrado" });
+    return res.status(400).json({ error: "E-mail já existente"});
 
   const salt = await bcrypt.genSalt(10);
   const senha = await bcrypt.hash(req.body.senha, salt);
@@ -24,6 +24,7 @@ router.post("/register", async (req, res) => {
     nome: req.body.nome,
     email: req.body.email,
     senha,
+    telefones: req.body.telefones,
     data_criacao: Date.now(),
     data_atualizacao: Date.now(),
     ultimo_login: Date.now()
@@ -39,7 +40,13 @@ router.post("/register", async (req, res) => {
         process.env.TOKEN_SECRET
     );
     await user.save();
-    res.json({ error: null, data: { userId: savedUser._id } });
+    res.json({
+      id: savedUser._id,
+      data_criacao: user.data_criacao,
+      data_atualizacao: user.data_atualizacao,
+      ultimo_login: user.ultimo_login,
+      token: user.token
+    });
   } catch (error) {
     res.status(400).json({ error });
   }
@@ -52,11 +59,11 @@ router.post("/login", async (req, res) => {
 
   const user = await User.findOne({ email: req.body.email });
 
-  if (!user) return res.status(400).json({ error: "email incorreto" });
+  if (!user) return res.status(400).json({ error: "Usuário e/ou senha inválidos" });
 
   const validsenha = await bcrypt.compare(req.body.senha, user.senha);
   if (!validsenha)
-    return res.status(400).json({ error: "senha incorreta" });
+    return res.status(401).json({ error: "Usuário e/ou senha inválidos" });
 
   const token = jwt.sign(
     {
@@ -66,15 +73,16 @@ router.post("/login", async (req, res) => {
     process.env.TOKEN_SECRET
   );
   user.ultimo_login = Date.now();
+  user.token = token;
   try {
     const savedUser = await user.save();
-    res.header("auth-token", token).json({
-      error: null,
-      data: {
-        token,
-      },
+    res.json({
+      id: savedUser._id,
+      data_criacao: user.data_criacao,
+      data_atualizacao: user.data_atualizacao,
+      ultimo_login: user.ultimo_login,
+      token: user.token
     });
-    res.json({ error: null, data: { userId: savedUser._id } });
   } catch (error) {
     res.status(400).json({ error });
   }
