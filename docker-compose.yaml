@@ -15,13 +15,24 @@ services:
     networks:
       - app-network
 
+  nodebackend:
+    build: .
+    container_name: api-sky
+    environment:
+      - DB_CONNECT_URI=$DB_CONNECT_URI
+      - TOKEN_SECRET=$TOKEN_SECRET
+    ports:
+      - 6767:6767 # porta default da api
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+    command: npm run start
+
 
 networks:
   app-network:
     driver: bridge
-  rabbit-network:
-    external:
-      name: rabbitmq-server_rabbit-network
 
 volumes:
   dbdata:

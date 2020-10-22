@@ -25,19 +25,19 @@ const userSchema = new mongoose.Schema({
     max: 1024,
   },
   telefones: [
-      {
-        numero: {
-          type : String,
-          min: 8,
-          max: 9
-        },
-        ddd: {
-          type: String,
-          min: 2,
-          max: 2
-        }
-      }
-      ],
+    {
+      numero: {
+        type: String,
+        min: 8,
+        max: 9,
+      },
+      ddd: {
+        type: String,
+        min: 2,
+        max: 2,
+      },
+    },
+  ],
   data_criacao: {
     type: Date,
     default: Date.now,
